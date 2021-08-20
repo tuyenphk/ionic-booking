@@ -17,7 +17,7 @@ export class CreateBookingComponent implements OnInit {
   ngOnInit() {}
 
   onBookPlace() {
-    this.modalCtrl.dismiss({messgae: 'This is booking confirmation'}, 'confirm')
+    this.modalCtrl.dismiss({messgae: 'This is booking confirmation'}, 'confirm');
   }
 
   onCancel() {
