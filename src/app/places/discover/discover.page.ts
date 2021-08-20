@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MenuController } from '@ionic/angular';
+import { SegmentChangeEventDetail } from '@ionic/core';
 
 import { Place } from '../place.model';
 import { PlacesService } from '../places.service';
@@ -23,6 +24,10 @@ export class DiscoverPage implements OnInit {
 
   onOpenMenu() {
     this.menuCtrl.toggle();
+  }
+
+  onFilterUpdate(event: CustomEvent<SegmentChangeEventDetail>) {
+    console.log(event.detail);
   }
 
 }
