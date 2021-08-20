@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { ModalController, NavController } from '@ionic/angular';
+import { ActionSheetController, ModalController, NavController } from '@ionic/angular';
 
 import { CreateBookingComponent } from 'src/app/bookings/create-booking/create-booking.component';
 import { Place } from '../../place.model';
