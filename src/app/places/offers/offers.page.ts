@@ -24,4 +24,8 @@ export class OffersPage implements OnInit {
     console.log('Editing item', offerId);
   }
 
+  getDummyDate() {
+    return new Date();
+  }
+
 }
