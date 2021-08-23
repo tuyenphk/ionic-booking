@@ -1,5 +1,5 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { MaxLengthValidator } from '@angular/forms';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { MaxLengthValidator, NgForm } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
 import { Place } from 'src/app/places/place.model';
 
@@ -11,6 +11,7 @@ import { Place } from 'src/app/places/place.model';
 export class CreateBookingComponent implements OnInit {
   @Input() selectedPlace: Place;
   @Input() selectedMode: 'select' | 'random';
+  @ViewChild('f', { static: true }) form: NgForm;
   startDate: string;
   endDate: string;
 
@@ -34,10 +35,26 @@ export class CreateBookingComponent implements OnInit {
   }
 
   onBookPlace() {
-    this.modalCtrl.dismiss({messgae: 'This is booking confirmation'}, 'confirm');
+    if (!this.form.valid || !this.datesValid){
+      return;
+    }
+
+    this.modalCtrl.dismiss({bookingData: {
+      firstName: this.form.value['first-name'],
+      lastName: this.form.value['last-name'],
+      guestNumber: this.form.value['guest-number'],
+      startDate: this.form.value['date-from'],
+      endDate: this.form.value['date-to']
+    }}, 'confirm');
   }
 
   onCancel() {
     this.modalCtrl.dismiss(null, 'cancel');
+  }
+
+  datesValid() {
+    const startDate = new Date(this.form.value['date-from']);
+    const endDate = new Date(this.form.value['date-to']);
+    return endDate > startDate;
   }
 }
