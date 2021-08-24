@@ -70,14 +70,14 @@ export class PlaceDetailPage implements OnInit {
       })
       .then(modalEl => {
         modalEl.present();
-        modalEl.onDidDismiss();//listener
+        return modalEl.onDidDismiss();//listener
+      })
+      .then(resultData => {
+        console.log(resultData.data, resultData.role);
+        if (resultData.role === 'confirm'){
+          console.log('Booked');
+        }
       });
-      // .then(resultData => {
-      //   console.log(resultData.data, resultData.role);
-      //   if (resultData.role === 'confirm'){
-      //     console.log('Booked');
-      //   }
-      // });
   }
 
 }
