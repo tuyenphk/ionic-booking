@@ -18,6 +18,7 @@ import { PlacesService } from '../../places.service';
 export class PlaceDetailPage implements OnInit, OnDestroy {
 
   place: Place;
+  isBookable = false;
   private placesSub: Subscription;
 
   constructor(
@@ -38,10 +39,11 @@ export class PlaceDetailPage implements OnInit, OnDestroy {
         return;
       }
       this.placesSub = this.placesService
-        .getPlace(paramMap.get('placeId'))
-        .subscribe(place => {
-          this.place = place;
-        });
+      .getPlace(paramMap.get('placeId'))
+      .subscribe(place => {
+        this.place = place;
+        this.isBookable = place.userId !== this.authService.userId;
+      });
     });
   }
 
