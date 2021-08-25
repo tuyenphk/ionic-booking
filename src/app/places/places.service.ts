@@ -90,12 +90,32 @@ export class PlacesService {
   }
 
   getPlace(id: string) {
-    return this.places.pipe(
-      take(1),
-      map(places => {
-        {return { ...places.find(p => p.id === id) };};
+    return this.http
+    .get<PlaceData>(
+      `https://ionic-booking-26606-default-rtdb.firebaseio.com/offered-places/${id}.json`
+    )
+    .pipe(
+      map(placeData => {
+        {return new Place(
+          id,
+          placeData.title,
+          placeData.description,
+          placeData.imgUrl,
+          placeData.price,
+          new Date(placeData.availableFrom),
+          new Date(placeData.availableTo),
+          placeData.userId
+        );}
       })
     );
+
+    // // work for local
+    // this.places.pipe(
+    //   take(1),
+    //   map(places => {
+    //     {return { ...places.find(p => p.id === id) };};
+    //   })
+    // );
   }
 
   addPlace(
