@@ -6,41 +6,51 @@ import { HttpClient } from '@angular/common/http';
 import { Place } from './place.model';
 import { AuthService } from '../auth/auth.service';
 
+interface PlaceData {
+  availableFrom: string;
+  availableTo: string;
+  description: string;
+  imgUrl: string;
+  price: number;
+  title: string;
+  userId: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class PlacesService {
   private placesArr = new BehaviorSubject<Place[]>([
-    new Place(
-      'p1',
-      'Manhattan Mansion',
-      'In the heart of New York City.',
-      'https://lonelyplanetimages.imgix.net/mastheads/GettyImages-538096543_medium.jpg?sharp=10&vib=20&w=1200',
-      149.99,
-      new Date('2019-01-01'),
-      new Date('2019-12-31'),
-      'abc'
-    ),
-    new Place(
-      'p2',
-      "L'Amour Toujours",
-      'A romantic place in Paris!',
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Paris_Night.jpg/1024px-Paris_Night.jpg',
-      189.99,
-      new Date('2019-01-01'),
-      new Date('2019-12-31'),
-      'abc'
-    ),
-    new Place(
-      'p3',
-      'The Foggy Palace',
-      'Not your average city trip!',
-      'https://upload.wikimedia.org/wikipedia/commons/0/01/San_Francisco_with_two_bridges_and_the_fog.jpg',
-      99.99,
-      new Date('2019-01-01'),
-      new Date('2019-12-31'),
-      'abc'
-    )
+    // new Place(
+    //   'p1',
+    //   'Manhattan Mansion',
+    //   'In the heart of New York City.',
+    //   'https://lonelyplanetimages.imgix.net/mastheads/GettyImages-538096543_medium.jpg?sharp=10&vib=20&w=1200',
+    //   149.99,
+    //   new Date('2019-01-01'),
+    //   new Date('2019-12-31'),
+    //   'abc'
+    // ),
+    // new Place(
+    //   'p2',
+    //   "L'Amour Toujours",
+    //   'A romantic place in Paris!',
+    //   'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Paris_Night.jpg/1024px-Paris_Night.jpg',
+    //   189.99,
+    //   new Date('2019-01-01'),
+    //   new Date('2019-12-31'),
+    //   'abc'
+    // ),
+    // new Place(
+    //   'p3',
+    //   'The Foggy Palace',
+    //   'Not your average city trip!',
+    //   'https://upload.wikimedia.org/wikipedia/commons/0/01/San_Francisco_with_two_bridges_and_the_fog.jpg',
+    //   99.99,
+    //   new Date('2019-01-01'),
+    //   new Date('2019-12-31'),
+    //   'abc'
+    // )
   ]);
 
   get places() {
@@ -48,6 +58,36 @@ export class PlacesService {
   }
 
   constructor(private authService: AuthService, private http: HttpClient) {}
+
+  fetchPlaces() {
+    return this.http
+      .get<{[key: string]: PlaceData}>('https://ionic-booking-26606-default-rtdb.firebaseio.com/offered-places.json')
+      .pipe(map(resData => {
+        const places = [];
+        for (const key in resData){
+          if (resData.hasOwnProperty(key)){
+            places.push(
+              new Place(
+                key,
+                  resData[key].title,
+                  resData[key].description,
+                  resData[key].imgUrl,
+                  resData[key].price,
+                  new Date(resData[key].availableFrom),
+                  new Date(resData[key].availableTo),
+                  resData[key].userId
+              )
+            );
+          }
+        }
+        // return places;
+        return [];
+      }),
+      tap(places => {
+        this.placesArr.next(places);
+      })
+    );
+  }
 
   getPlace(id: string) {
     return this.places.pipe(
