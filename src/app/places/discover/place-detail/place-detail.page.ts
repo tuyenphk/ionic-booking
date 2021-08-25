@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ActionSheetController, ModalController, NavController } from '@ionic/angular';
+import { Subscription } from 'rxjs';
 
 import { CreateBookingComponent } from 'src/app/bookings/create-booking/create-booking.component';
 import { Place } from '../../place.model';
@@ -11,9 +12,11 @@ import { PlacesService } from '../../places.service';
   templateUrl: './place-detail.page.html',
   styleUrls: ['./place-detail.page.scss'],
 })
-export class PlaceDetailPage implements OnInit {
+export class PlaceDetailPage implements OnInit, OnDestroy {
 
   place: Place;
+  private placesSub: Subscription;
+
   constructor(
     private navCtrl: NavController,
     private route: ActivatedRoute,
@@ -28,8 +31,18 @@ export class PlaceDetailPage implements OnInit {
         this.navCtrl.navigateBack('places/tabs/discover');
         return;
       }
-      this.place = this.placesService.places.find(p => p.id === paramMap.get('placeId'));
+      this.placesSub = this.placesService
+        .getPlace(paramMap.get('placeId'))
+        .subscribe(place => {
+          this.place = place;
+        });
     });
+  }
+
+  ngOnDestroy() {
+    if (this.placesSub) {
+      this.placesSub.unsubscribe();
+    }
   }
 
   // open the Create Booking Modal
@@ -70,14 +83,14 @@ export class PlaceDetailPage implements OnInit {
       })
       .then(modalEl => {
         modalEl.present();
-        return modalEl.onDidDismiss();//listener
-      })
-      .then(resultData => {
-        console.log(resultData.data, resultData.role);
-        if (resultData.role === 'confirm'){
-          console.log('Booked');
-        }
+        modalEl.onDidDismiss();//listener
       });
+      // .then(resultData => {
+      //   console.log(resultData.data, resultData.role);
+      //   if (resultData.role === 'confirm'){
+      //     console.log('Booked');
+      //   }
+      // });
   }
 
 }
