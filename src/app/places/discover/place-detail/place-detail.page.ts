@@ -1,11 +1,14 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { ActionSheetController, ModalController, NavController } from '@ionic/angular';
+import { ActionSheetController, LoadingController, ModalController, NavController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
+import { AuthService } from 'src/app/auth/auth.service';
 
+import { BookingsService } from 'src/app/bookings/bookings.service';
 import { CreateBookingComponent } from 'src/app/bookings/create-booking/create-booking.component';
 import { Place } from '../../place.model';
 import { PlacesService } from '../../places.service';
+
 
 @Component({
   selector: 'app-place-detail',
@@ -22,7 +25,10 @@ export class PlaceDetailPage implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private placesService: PlacesService,
     private modalCtrl: ModalController,
-    private actionSheetCtrl: ActionSheetController
+    private actionSheetCtrl: ActionSheetController,
+    private bookingsService: BookingsService,
+    private loadingCtrl: LoadingController,
+    private authService: AuthService
   ) { }
 
   ngOnInit() {
@@ -83,14 +89,31 @@ export class PlaceDetailPage implements OnInit, OnDestroy {
       })
       .then(modalEl => {
         modalEl.present();
-        modalEl.onDidDismiss();//listener
+        return modalEl.onDidDismiss();//listener
+      })
+      .then(resultData => {
+        console.log(resultData.data, resultData.role);
+        if (resultData.role === 'confirm'){
+          this.loadingCtrl
+            .create({message: 'Booking place...'})
+            .then(loadingEl => {
+              loadingEl.present();
+              const data = resultData.data.bookingData;
+              this.bookingsService.addBooking(
+                this.place.id,
+                this.place.title,
+                this.place.imgUrl,
+                data.firstName,
+                data.lastName,
+                data.guestNumber,
+                data.startDate,
+                data.endDate
+              ).subscribe(() => {
+                loadingEl.dismiss();
+              });
+            });
+        }
       });
-      // .then(resultData => {
-      //   console.log(resultData.data, resultData.role);
-      //   if (resultData.role === 'confirm'){
-      //     console.log('Booked');
-      //   }
-      // });
   }
 
 }

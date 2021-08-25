@@ -53,7 +53,7 @@ export class NewOfferPage implements OnInit {
         message: 'Creating place...'
       })
       .then(loadingEl => {
-        loadingEl.present();
+        loadingEl.present(); //show the mnessage on the screen
         this.placesService
           .addPlace(
             this.form.value.title,
