@@ -29,9 +29,7 @@
 
         <ion-list *ngIf="!isLoading && offers.length > 0">
           <ion-item-sliding *ngFor="let offer of offers" #slidingItem>
-            <ion-item
-              [routerLink]="['/', 'places', 'tabs', 'offers', offer.id]"
-            >
+            <ion-item>
               <ion-thumbnail slot="start">
                 <ion-img [src]="offer.imgUrl"></ion-img>
               </ion-thumbnail>
